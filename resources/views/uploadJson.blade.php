@@ -18,7 +18,7 @@
 <body>
     <form id="data" method="post" enctype="multipart/form-data" class="container" style="margin-top: 100px;">
         <h3>Upload Json File</h3>
-        <input name="uploadJson" type="file" />
+        <input id="uploadJson" name="uploadJson" type="file" />
         <button class="btn-primary">Upload</button>
     </form>
     <br><br>
@@ -60,8 +60,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: "http://127.0.0.1:8000/api/uploadJsonFileData",
-                columns: [
-                    {
+                columns: [{
                         data: 'id',
                         name: 'id'
                     },
@@ -95,18 +94,32 @@
             $("form#data").submit(function(e) {
                 e.preventDefault();
                 var formData = new FormData(this);
+                let file = document.getElementById('uploadJson').files[0];
+                if (file) {
+                    if(file.type === "application/json"){
+                        $.ajax({
+                        url: 'http://127.0.0.1:8000/api/uploadJsonFile',
+                        type: 'POST',
+                        data: formData,
+                        success: function(data) {
+                            alert("Data stored successfully.");
+                            location.reload();
+                        },
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    });
+                    return true;
+                    } else {
+                        alert("please select JSON file..!!!");
+                    return false;
+                    }
 
-                $.ajax({
-                    url: 'http://127.0.0.1:8000/api/uploadJsonFile',
-                    type: 'POST',
-                    data: formData,
-                    success: function(data) {
-                        alert("Data stored successfully. Please refresh page.")
-                    },
-                    cache: false,
-                    contentType: false,
-                    processData: false
-                });
+                } else {
+                    alert("please select file..!!!");
+                    return false;
+                }
+
             });
 
         });
